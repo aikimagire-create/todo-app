@@ -1,0 +1,641 @@
+<title>負債の宿屋</title>
+<style>
+  :root {
+    --paper:      #F2F4EE;
+    --bar:        #E5EBE1;
+    --surface:    #FBFCFA;
+    --rule:       #C6D0C4;
+    --ink:        #1B2420;
+    --ink-soft:   #4A5751;
+    --muted:      #6B7770;
+    --green:      #2F6B4F;
+    --green-dim:  #DCE8DF;
+    --red:        #A8321E;
+    --red-dim:    #F3DFDA;
+    --amber:      #8A6A1F;
+    --amber-dim:  #F0E7CE;
+
+    --serif: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", "Songti SC", serif;
+    --sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", system-ui, sans-serif;
+    --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+    --s1: 0.35rem; --s2: 0.7rem; --s3: 1.1rem;
+    --s4: 1.7rem; --s5: 2.6rem; --s6: 4rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:     #131714;
+      --bar:       #1B211C;
+      --surface:   #1A201B;
+      --rule:      #333D35;
+      --ink:       #E8EDE6;
+      --ink-soft:  #B4BFB6;
+      --muted:     #8E9A90;
+      --green:     #77C69B;
+      --green-dim: #1E2E24;
+      --red:       #E58A73;
+      --red-dim:   #33201B;
+      --amber:     #D9B863;
+      --amber-dim: #2E2717;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper:     #131714;
+    --bar:       #1B211C;
+    --surface:   #1A201B;
+    --rule:      #333D35;
+    --ink:       #E8EDE6;
+    --ink-soft:  #B4BFB6;
+    --muted:     #8E9A90;
+    --green:     #77C69B;
+    --green-dim: #1E2E24;
+    --red:       #E58A73;
+    --red-dim:   #33201B;
+    --amber:     #D9B863;
+    --amber-dim: #2E2717;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.85;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .sheet {
+    max-width: 61rem;
+    margin: 0 auto;
+    padding: var(--s6) var(--s4) var(--s6);
+  }
+
+  /* ---------- masthead ---------- */
+  .masthead {
+    border-top: 3px solid var(--ink);
+    border-bottom: 1px solid var(--rule);
+    padding: var(--s4) 0 var(--s4);
+    margin-bottom: var(--s5);
+  }
+  .docmeta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s1) var(--s3);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: var(--s3);
+  }
+  .masthead h1 {
+    font-family: var(--serif);
+    font-size: clamp(2.6rem, 7vw, 4.4rem);
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: 0.02em;
+    margin: 0 0 var(--s2);
+    text-wrap: balance;
+  }
+  .tagline {
+    font-family: var(--serif);
+    font-size: clamp(1rem, 2.4vw, 1.32rem);
+    color: var(--ink-soft);
+    margin: 0 0 var(--s4);
+    max-width: 40ch;
+    line-height: 1.7;
+  }
+
+  .verdict {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--s2);
+    background: var(--green-dim);
+    color: var(--green);
+    border-left: 3px solid var(--green);
+    padding: var(--s2) var(--s3);
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+  }
+
+  /* ---------- headline stats ---------- */
+  .keyfigures {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin: var(--s5) 0;
+  }
+  .kf { background: var(--surface); padding: var(--s3); }
+  .kf dt {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: var(--s1);
+  }
+  .kf dd {
+    margin: 0;
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 1.55rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--ink);
+  }
+  .kf dd span { font-size: 0.82rem; font-weight: 400; color: var(--muted); }
+
+  /* ---------- sections ---------- */
+  section {
+    display: grid;
+    grid-template-columns: 3.6rem 1fr;
+    gap: 0 var(--s3);
+    padding: var(--s5) 0;
+    border-top: 1px solid var(--rule);
+  }
+  .secnum {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--green);
+    padding-top: 0.55rem;
+    letter-spacing: 0.04em;
+  }
+  .secbody { min-width: 0; }
+  section h2 {
+    font-family: var(--serif);
+    font-size: clamp(1.45rem, 3.4vw, 1.95rem);
+    font-weight: 600;
+    letter-spacing: 0.015em;
+    margin: 0 0 var(--s3);
+    text-wrap: balance;
+  }
+  section h3 {
+    font-family: var(--sans);
+    font-size: 0.94rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: var(--ink);
+    margin: var(--s4) 0 var(--s2);
+    padding-bottom: var(--s1);
+    border-bottom: 1px solid var(--rule);
+  }
+  p { margin: 0 0 var(--s3); max-width: 66ch; }
+  .secbody > p:last-child { margin-bottom: 0; }
+  strong { font-weight: 700; }
+  .em-red { color: var(--red); font-weight: 700; }
+  .em-green { color: var(--green); font-weight: 700; }
+
+  /* ---------- ledger tables ---------- */
+  .scroll { overflow-x: auto; margin: var(--s3) 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.87rem;
+    min-width: 30rem;
+  }
+  caption {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding-bottom: var(--s2);
+  }
+  th, td {
+    text-align: left;
+    padding: 0.6rem var(--s2);
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  thead th {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    border-bottom: 1.5px solid var(--ink);
+    white-space: nowrap;
+  }
+  tbody tr:nth-child(even) { background: var(--bar); }
+  .num {
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    white-space: nowrap;
+  }
+  tfoot td {
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    border-top: 1.5px solid var(--ink);
+    border-bottom: 3px double var(--ink);
+    background: var(--surface);
+  }
+
+  /* ---------- verdict pills ---------- */
+  .pill {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.07em;
+    padding: 0.12rem 0.5rem;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .pill-no { background: var(--red-dim); color: var(--red); }
+  .pill-yes { background: var(--green-dim); color: var(--green); }
+  .pill-hold { background: var(--amber-dim); color: var(--amber); }
+
+  /* ---------- loop diagram ---------- */
+  .loop {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin: var(--s3) 0;
+  }
+  .loop-step { background: var(--surface); padding: var(--s3); }
+  .loop-step .phase {
+    font-family: var(--mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.1em;
+    color: var(--green);
+    display: block;
+    margin-bottom: var(--s1);
+  }
+  .loop-step b { display: block; font-size: 0.93rem; margin-bottom: var(--s1); }
+  .loop-step span.d { font-size: 0.81rem; color: var(--ink-soft); line-height: 1.65; }
+
+  /* ---------- callout ---------- */
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--green);
+    padding: var(--s3);
+    margin: var(--s3) 0;
+  }
+  .callout p { margin-bottom: var(--s2); }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout .label {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--green);
+    display: block;
+    margin-bottom: var(--s2);
+  }
+  .callout.warn { border-left-color: var(--red); }
+  .callout.warn .label { color: var(--red); }
+
+  ul { margin: 0 0 var(--s3); padding-left: 1.15rem; max-width: 66ch; }
+  li { margin-bottom: var(--s2); }
+  li:last-child { margin-bottom: 0; }
+  li::marker { color: var(--green); }
+
+  /* ---------- phase blocks ---------- */
+  .phases { display: grid; gap: var(--s3); margin: var(--s3) 0; }
+  .phase-card {
+    border: 1px solid var(--rule);
+    background: var(--surface);
+    padding: var(--s3);
+  }
+  .phase-card header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s2);
+    margin-bottom: var(--s2);
+    padding-bottom: var(--s2);
+    border-bottom: 1px solid var(--rule);
+  }
+  .phase-card h4 {
+    font-family: var(--serif);
+    font-size: 1.12rem;
+    font-weight: 600;
+    margin: 0;
+  }
+  .phase-card .cost {
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+  .phase-card p { font-size: 0.88rem; margin-bottom: 0; }
+
+  footer {
+    border-top: 3px solid var(--ink);
+    margin-top: var(--s5);
+    padding-top: var(--s3);
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2) var(--s3);
+    justify-content: space-between;
+  }
+  footer a { color: var(--green); }
+
+  @media (max-width: 46rem) {
+    .sheet { padding: var(--s4) var(--s3) var(--s5); }
+    section { grid-template-columns: 1fr; gap: var(--s2); }
+    .secnum { padding-top: 0; }
+  }
+</style>
+
+<div class="sheet">
+
+  <div class="masthead">
+    <div class="docmeta">
+      <span>企画書</span>
+      <span>DLsite / 全年齢</span>
+      <span>経営ローグライト</span>
+      <span>2026.08.16</span>
+    </div>
+    <h1>負債の宿屋</h1>
+    <p class="tagline">借金を抱えた宿屋の女主人が、三十日で返済に挑む。<br>失敗もまた、ひとつの結末として記録される。</p>
+    <div class="verdict"><span>判定</span><strong>採用 — プロデューサー承認済</strong></div>
+  </div>
+
+  <dl class="keyfigures">
+    <div class="kf"><dt>総予算</dt><dd>200,000<span> 円</span></dd></div>
+    <div class="kf"><dt>開発期間</dt><dd>6<span> ヶ月</span></dd></div>
+    <div class="kf"><dt>販売価格</dt><dd>1,540<span> 円</span></dd></div>
+    <div class="kf"><dt>損益分岐</dt><dd>200<span> 本</span></dd></div>
+    <div class="kf"><dt>目標</dt><dd>1,000<span> 本</span></dd></div>
+    <div class="kf"><dt>目標時ROI</dt><dd>5.0<span> 倍</span></dd></div>
+  </dl>
+
+  <section>
+    <div class="secnum">01</div>
+    <div class="secbody">
+      <h2>市場調査 — 制約はどこにあるか</h2>
+      <p>DLsiteの販売実績データから、企画を縛る事実を先に確定させた。この数字が設計のすべてを決めている。</p>
+      <div class="scroll">
+        <table>
+          <caption>プランナー調査 / DLsite 市場データ</caption>
+          <thead>
+            <tr><th>調査項目</th><th>数値・事実</th><th>企画への影響</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>全年齢ゲームの販売数<strong>最頻値</strong></td><td class="em-red">0 本</td><td>「作れば売れる」は成立しない</td></tr>
+            <tr><td>販売数の分布形状</td><td>指数型ロングテール</td><td>下振れ前提で予算を組む</td></tr>
+            <tr><td>アダルト / 全年齢の販売差</td><td>アダルトが <strong>10倍以上</strong></td><td>フェーズ2の投資先</td></tr>
+            <tr><td>年間上位作の価格</td><td>平均 2,640円 / 中央値 2,420円</td><td>ゲームは高単価が通る市場</td></tr>
+            <tr><td>上位ランキングの構成</td><td>ゲームが約 75%</td><td>ゲーム需要そのものは強い</td></tr>
+            <tr><td>発売1週目の比重</td><td>総売上の約 20%</td><td>1週目×5 で着地を早期予測できる</td></tr>
+            <tr><td>売上ピーク時期</td><td>8月・12月（大型セール連動）</td><td>リリース時期を8月に固定</td></tr>
+            <tr><td>ランキング入りの助走</td><td>約 120 日</td><td>8月発売なら年末セールに間に合う</td></tr>
+            <tr><td>立ち絵の外注相場</td><td>1体 10,000〜50,000円</td><td class="em-red">予算20万の最大の制約</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout warn">
+        <span class="label">この調査から導かれる結論</span>
+        <p>立ち絵1体3万円なら、<strong>6体で予算が消える</strong>。つまり予算20万円では「コンテンツ量で殴るゲーム」は構造的に作れない。<strong>システムでリプレイ性を生む設計</strong>以外に選択肢はない。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="secnum">02</div>
+    <div class="secbody">
+      <h2>3案の比較とディレクター判定</h2>
+      <p>上記の制約下で3案を起案し、採用基準（予算20万・工数半年・1000本）で判定した。第1ラウンドは全案差し戻しとなった。</p>
+      <div class="scroll">
+        <table>
+          <caption>第1ラウンド / ディレクター判定</caption>
+          <thead>
+            <tr><th>案</th><th>ジャンル</th><th>判定</th><th>理由</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>C案</strong><br>迷宮図書館アーカイヴ</td>
+              <td>探索RPG</td>
+              <td><span class="pill pill-no">工数で不成立</span></td>
+              <td>マップ・敵・イベント・バランス調整で工数が爆発する。上位RPGが売れているのは物量があるからで、20万円で同じ土俵に上がれば負ける。</td>
+            </tr>
+            <tr>
+              <td><strong>B案</strong><br>デッキ・オブ・ザ・ダムド</td>
+              <td>デッキ構築</td>
+              <td><span class="pill pill-no">差別化で不成立</span></td>
+              <td>既存の大型タイトルと直接比較される。DLsiteの購買層はキャラクターと状況を求めており、システム単体では刺さらない。</td>
+            </tr>
+            <tr>
+              <td><strong>A案</strong><br>ギルド酒場の錬金術師</td>
+              <td>経営シム</td>
+              <td><span class="pill pill-hold">条件付き差し戻し</span></td>
+              <td>低アート量で成立する構造は正しい。ただし「酒場経営」だけでは飽和ジャンルの棚で埋もれる。フックが不足。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>差し戻し条件（ディレクター指示）</h3>
+      <ul>
+        <li>1周 <strong>30分〜1時間で完結するループ</strong>にして、リプレイ性でボリュームを稼ぐこと</li>
+        <li><strong>1枚の背景を差分で使い倒す</strong>設計にすること</li>
+        <li><strong>切迫感のあるフック</strong>を足し、棚で目を引く一行を作ること</li>
+      </ul>
+      <div class="callout">
+        <span class="label">第2ラウンド 判定</span>
+        <p>改訂案『負債の宿屋』を <span class="em-green">採用</span>。1画面ゲームのため工数が読め、半年で確実に閉じられる点が決定的。「失敗＝別エンディング」でアート資産を再利用しながらボリューム感を出す構造も、この予算では最適解。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="secnum">03</div>
+    <div class="secbody">
+      <h2>採用案 — コンセプトとフック</h2>
+      <p>借金を抱えた宿屋の女主人が、<strong>30日以内に返済する</strong>経営ローグライト。1周＝ゲーム内30日＝実時間30〜60分。</p>
+      <p>フックは<strong>「借金の締切」</strong>。棚で一行で伝わり、プレイ中は常に緊張が持続する。毎周ランダムな客・イベント・スキルが配られ、失敗しても返済額に応じてエンディングが分岐する。つまり<strong>失敗そのものがコンテンツになる</strong>——これが低予算でボリューム感を出す中核の仕掛けである。</p>
+      <h3>コアループ</h3>
+      <div class="loop">
+        <div class="loop-step"><span class="phase">朝</span><b>仕入れと準備</b><span class="d">限られた資金で食材・寝具・設備を選ぶ。何を切り捨てるかの判断。</span></div>
+        <div class="loop-step"><span class="phase">昼</span><b>客の受け入れ</b><span class="d">ランダムな客が訪れる。支払い能力・要求・トラブルの種はそれぞれ異なる。</span></div>
+        <div class="loop-step"><span class="phase">夜</span><b>イベント処理</b><span class="d">盗難、病、上客の紹介。選択がその周の展開を変える。</span></div>
+        <div class="loop-step"><span class="phase">清算</span><b>返済と改装</b><span class="d">利益を返済に回すか、宿に再投資するか。30日後に結末が決まる。</span></div>
+      </div>
+      <h3>収集要素（リプレイ動機）</h3>
+      <ul>
+        <li><strong>客図鑑</strong> — 一度泊めた客が記録される。条件付きでしか現れない客がいる</li>
+        <li><strong>結末図鑑</strong> — 返済額と選択で分岐する複数エンディング。失敗ルートも収集対象</li>
+        <li><strong>設備ツリー</strong> — 周を跨いで解放される改装オプション</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="secnum">04</div>
+    <div class="secbody">
+      <h2>なぜ20万円で成立するのか</h2>
+      <p>この企画の本質は物語ではなく<strong>アート量の設計</strong>にある。コンテンツを足してもアート費が増えない構造を先に作った。</p>
+      <div class="scroll">
+        <table>
+          <caption>アート資産の増幅設計</caption>
+          <thead>
+            <tr><th>要素</th><th>発注量</th><th>画面上の見え方</th><th>増幅率</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>背景</td><td>1 枚</td><td>改装3段階＋昼夜差分で使い回す</td><td class="num em-green">×4</td></tr>
+            <tr><td>キャラクター立ち絵</td><td>4 体</td><td>表情差分5種で20カット相当</td><td class="num em-green">×5</td></tr>
+            <tr><td>泊まり客</td><td>0 体（内製）</td><td>アイコン／シルエットで処理</td><td class="num em-green">追加費 0</td></tr>
+            <tr><td>UI・アイコン</td><td>素材購入</td><td>画面の大半を占める主役</td><td class="num">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">
+        <span class="label">構造上の利点</span>
+        <p>舞台が<strong>宿屋の1画面のみ</strong>で、画面がUI主体であるため、イベントや客を追加してもアート発注が発生しない。コンテンツ量とコストが<strong>連動しない</strong>ことが、この予算規模で唯一勝てる形である。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="secnum">05</div>
+    <div class="secbody">
+      <h2>予算内訳</h2>
+      <div class="scroll">
+        <table>
+          <caption>フェーズ1 総予算 / 上限 200,000 円</caption>
+          <thead>
+            <tr><th>項目</th><th>内容</th><th class="num">金額</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>キャラクター立ち絵</td><td>4体（表情差分5種込み）</td><td class="num">100,000</td></tr>
+            <tr><td>背景</td><td>1枚＋改装3段階の差分</td><td class="num">30,000</td></tr>
+            <tr><td>UI・アイコン素材</td><td>素材集の購入＋加工</td><td class="num">12,000</td></tr>
+            <tr><td>BGM</td><td>ロイヤリティフリー 5曲</td><td class="num">8,000</td></tr>
+            <tr><td>SE</td><td>フリー素材で対応</td><td class="num">0</td></tr>
+            <tr><td>ゲームエンジン</td><td>Godot（無償・ロイヤリティなし）</td><td class="num">0</td></tr>
+            <tr><td>販促素材</td><td>ストアサムネイル・バナー</td><td class="num">15,000</td></tr>
+            <tr><td>予備費</td><td>外注遅延・差し替えのバッファ</td><td class="num">35,000</td></tr>
+          </tbody>
+          <tfoot>
+            <tr><td colspan="2">合計</td><td class="num">200,000</td></tr>
+          </tfoot>
+        </table>
+      </div>
+      <p>予備費35,000円は<strong>外注リスクの吸収枠</strong>として確保する。個人・小規模開発で最も頻発する事故はイラスト外注の遅延と品質差し替えであり、ここを空にした計画は破綻する。</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="secnum">06</div>
+    <div class="secbody">
+      <h2>開発スケジュール</h2>
+      <p>リリースは<strong>8月</strong>に固定する。調査の通り8月は売上ピークであり、かつランキング入りに必要な約120日の助走を経て<strong>年末セールで二度目の山</strong>を取れる唯一の時期である。</p>
+      <div class="scroll">
+        <table>
+          <caption>6ヶ月 / マイルストーン</caption>
+          <thead>
+            <tr><th>月</th><th>マイルストーン</th><th>完了判定</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="num">M1</td><td>コアループのプロトタイプ</td><td>仮素材で1周30分が通しで回る</td></tr>
+            <tr><td class="num">M2</td><td>システム実装</td><td>客・イベント・スキル・図鑑が動作</td></tr>
+            <tr><td class="num">M3</td><td>コンテンツ量産／アート発注確定</td><td>外注へ発注完了・仕様凍結</td></tr>
+            <tr><td class="num">M4</td><td>アート統合／Ci-en 開発日誌開始</td><td>本素材差し替え・露出開始</td></tr>
+            <tr><td class="num">M5</td><td>体験版公開</td><td>フィードバック収集とバランス調整</td></tr>
+            <tr><td class="num">M6</td><td>磨き込み・ストアページ整備</td><td class="em-green">8月リリース</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>M3で<strong>仕様を凍結</strong>する点が重要。以降の追加要望はすべてフェーズ2に送り、半年の枠を死守する。</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="secnum">07</div>
+    <div class="secbody">
+      <h2>販売計画と損益分岐</h2>
+      <p>価格は <strong>1,540円</strong>。発売2週間は20%OFF（1,232円）で初動を作る。調査の「1週目＝総売上の約20%」から、初週実績×5で着地を早期に判断できる。</p>
+      <div class="scroll">
+        <table>
+          <caption>収支試算 / 手取り単価は保守的に 1,000円 で計算</caption>
+          <thead>
+            <tr><th>シナリオ</th><th class="num">販売本数</th><th class="num">概算手取り</th><th class="num">対 投資</th><th>評価</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>損益分岐点</td><td class="num">200</td><td class="num">200,000</td><td class="num">1.0×</td><td>投資回収</td></tr>
+            <tr><td>下振れ</td><td class="num">400</td><td class="num">400,000</td><td class="num">2.0×</td><td>次作の資金は残る</td></tr>
+            <tr><td><strong>目標</strong></td><td class="num em-green">1,000</td><td class="num em-green">1,000,000</td><td class="num em-green">5.0×</td><td class="em-green">採用基準を達成</td></tr>
+            <tr><td>上振れ</td><td class="num">2,500</td><td class="num">2,500,000</td><td class="num">12.5×</td><td>フェーズ2を本格展開</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>DLsiteの還元率は価格連動の階段式（低単価ほど手数料が高く、高単価帯で創作者側の取り分が増える）。上表は保守側に寄せた概算であり、<strong>実際の料率は契約時に要確認</strong>とする。</p>
+      <h3>集客施策（追加費用なし）</h3>
+      <ul>
+        <li><strong>Ci-en 開発日誌</strong>をM4から開始し、リリース前に見込み客を蓄積する</li>
+        <li><strong>体験版</strong>をM5で公開。1画面ゲームゆえ体験版の制作コストが実質ゼロ</li>
+        <li><strong>SNSでのGIF投稿</strong> — 1画面かつ数値が動くゲームは短尺映像との相性が良い</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="secnum">08</div>
+    <div class="secbody">
+      <h2>リスクと対策</h2>
+      <div class="scroll">
+        <table>
+          <caption>想定リスク / 対応方針</caption>
+          <thead>
+            <tr><th>リスク</th><th>深刻度</th><th>対策</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>全年齢ゲームは販売数の最頻値が0本</td><td><span class="pill pill-no">高</span></td><td>段階投資で下振れを20万円に固定。フェーズ2で10倍レンジの市場へ拡張</td></tr>
+            <tr><td>経営シムは飽和ジャンル</td><td><span class="pill pill-hold">中</span></td><td>「30日の借金返済」という締切フックと30分ローグライト構造で差別化</td></tr>
+            <tr><td>イラスト外注の遅延・品質差</td><td><span class="pill pill-hold">中</span></td><td>M3で発注確定、予備費35,000円を差し替え枠として確保</td></tr>
+            <tr><td>露出不足で初動が立たない</td><td><span class="pill pill-hold">中</span></td><td>Ci-en日誌・体験版・8月リリースの三点で助走を作る</td></tr>
+            <tr><td>工数超過</td><td><span class="pill pill-yes">低</span></td><td>1画面ゲームで見積り精度が高い。M3の仕様凍結で追加要望を遮断</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="secnum">09</div>
+    <div class="secbody">
+      <h2>段階投資プラン</h2>
+      <p>プロデューサーレビューでの指摘——「全年齢の最頻値が0本と自ら調査しておいて、1000本の根拠は何か」——への回答がこの節である。</p>
+      <div class="phases">
+        <div class="phase-card">
+          <header><h4>フェーズ1 — 全年齢版でリリース</h4><span class="cost">200,000円 / 6ヶ月</span></header>
+          <p>本企画書の範囲。損益分岐は200本、目標1000本は分岐点の5倍。ここで<strong>投じる資金の上限が20万円に確定</strong>する。仮に完全に外しても損失はこの額を超えない。</p>
+        </div>
+        <div class="phase-card">
+          <header><h4>フェーズ2 — 収益を再投資して拡張</h4><span class="cost">フェーズ1の売上から充当</span></header>
+          <p>調査で確認された「アダルトは全年齢の10倍以上」という市場差に対し、追加SKUとして展開する。<strong>自己資金ではなく売上から投資する</strong>ため、フェーズ1が不発なら実行しないという判断が自動的に成立する。</p>
+        </div>
+      </div>
+      <div class="callout">
+        <span class="label">プロデューサー承認理由</span>
+        <p>下振れが20万円で確定し、上振れは自己資金ではなく売上から取りに行ける。<strong>リスクの上限が閉じている</strong>点をもって承認する。</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>企画：プランナー / 判定：ディレクター / 承認：プロデューサー</span>
+    <span>負債の宿屋 — 企画書 v1.0</span>
+  </footer>
+
+</div>
